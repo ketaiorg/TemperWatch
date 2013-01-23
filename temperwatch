@@ -1,0 +1,49 @@
+#!/usr/bin/php
+<?php
+/**
+ * TemperWatch
+ * 温度を取得し既定の温度を超えていたらメッセージを出力するプログラム
+ * 
+ * @package		Temper
+ * @author		松井 健太郎 (Kentaro Matsui) <info@ke-tai.org>
+ * @copyright	infiniteloop
+ * @license		BSD
+ * @link		https://github.com/bitplane/temper
+ * @link		http://www.infiniteloop.co.jp/blog/2012/10/linuxthermometer/
+ */
+
+TemperWatch::run();
+
+
+class TemperWatch
+{
+	const BORDER_TEMP = '28.0';
+	const EXEC_CMD = '/usr/local/bin/temper';				// 温度取得コマンド
+	const MSG_OK = '温度が%%BORDER%%度を超えました（現在%%TEMPER%%度）';
+	const MSG_NG = 'error.';
+
+	/**
+	 * 実行
+	 */
+	static public function run()
+	{
+		exec(self::EXEC_CMD, $output, $return_var);			// コマンドの実行
+		if (isset($output[0]) and '' != $output[0] and 0 === $return_var) {
+			list($dummy, $temper) = explode(',', $output[0]);
+			$temper = sprintf('%.1f', $temper);
+			if ($temper >= self::BORDER_TEMP) {
+				$msg = strtr(self::MSG_OK, array('%%TEMPER%%' => $temper, '%%BORDER%%' => self::BORDER_TEMP)) . "\n";
+				echo $msg;
+			}
+		} else {
+			// エラーの場合
+			$msg = self::MSG_NG . "\n";
+			fputs(STDERR, $msg);
+			exit(1);		// 異常終了
+		}
+
+		// 正常終了
+		exit(0);
+	}
+}
+
