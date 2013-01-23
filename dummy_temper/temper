@@ -1,0 +1,4 @@
+#!/bin/sh
+# Skypebotプラグインのtemper開発のためのダミースクリプト
+# /usr/local/bin/temperとして設置すると良い↵
+echo "2013-01-10 22:02:33,28.339363"
